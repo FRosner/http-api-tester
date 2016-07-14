@@ -1,0 +1,44 @@
+#!/bin/bash
+
+METHOD=$(cat method)
+if [ -z "$METHOD" ]; then
+  METHOD_SUBCOMMAND=""
+else
+  METHOD_SUBCOMMAND="-X $METHOD"
+fi
+
+URL=$(cat url)
+if [ -z "$URL" ]; then
+  URL_SUBCOMMAND="localhost"
+else
+  URL_SUBCOMMAND="$URL"
+fi
+
+REQUEST_DATA=$(cat request-data)
+if [ -z "$REQUEST_DATA" ]; then
+  REQUEST_DATA_SUBCOMMAND=""
+else
+  REQUEST_DATA_SUBCOMMAND="-d @request-data"
+fi
+
+mkdir actual
+COMMAND="curl -s -v $METHOD_SUBCOMMAND $REQUEST_DATA_SUBCOMMAND $URL_SUBCOMMAND"
+echo "$COMMAND"
+$COMMAND 1> actual/response-data 2> actual/response-curl
+
+function compare {
+  ACTUAL="actual/$1"
+  EXPECTED="expected/$1"
+  cmp --silent $ACTUAL $EXPECTED
+  local status=$?
+  if [ $status -ne 0 ]; then
+    echo -e "\033[0;31m$ACTUAL did not match $EXPECTED\033[0m" >&2
+  else
+    echo -e "\033[0;32m$ACTUAL matched $EXPECTED\033[0m"
+  fi
+  return $status
+}
+
+cat actual/response-data | jq . > actual/response-data.json
+cat expected/response-data | jq . > expected/response-data.json
+compare response-data.json

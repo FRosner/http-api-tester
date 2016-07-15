@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "  before:"
+echo "    - dummy action 1"
+echo "    - dummy action 2"

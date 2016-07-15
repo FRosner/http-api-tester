@@ -15,6 +15,8 @@ function test {
   test_case=$1
   test_case_name="$(basename "${test_case}")"
 
+  echo -e "\033[1m$test_case_name\033[0m:"
+
   method=$(cat $test_case/method)
   if [ -z "$method" ]; then
     method_subcommand=""
@@ -36,9 +38,14 @@ function test {
     request_data_subcommand="-d @$test_case/request-data"
   fi
 
+  if [ -r "$test_case/before" ]; then
+    $test_case/before
+  fi
+
   mkdir actual 2> /dev/null
   command="curl -s -v $method_subcommand $request_data_subcommand $url_subcommand"
-  echo -e "\033[1m$test_case_name\033[0m: $command"
+  echo "  command:"
+  echo "    - $command"
   $command 1> $test_case/actual/response-data 2> $test_case/actual/response-curl
 
   function compare {
@@ -47,9 +54,11 @@ function test {
     cmp --silent $actual $expected
     local status=$?
     if [ $status -ne 0 ]; then
-      echo -e "  \033[0;31m$actual did not match $expected\033[0m" >&2
+      echo    "  result:"
+      echo -e "    - \033[0;31m$actual did not match $expected\033[0m" >&2
     else
-      echo -e "  \033[0;32m$actual matched $expected\033[0m"
+      echo    "  result:"
+      echo -e "    - \033[0;32m$actual matched $expected\033[0m"
     fi
     return $status
   }
@@ -63,5 +72,3 @@ for test_case in $test_case_directory/*; do
   [ -d "${test_case}" ] || continue
   test $test_case
 done
-
-exit

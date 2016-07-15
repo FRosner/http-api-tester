@@ -12,7 +12,7 @@ Framework for testing HTTP APIs.
 http-server&
 
 # Test it
-./http-api-tester example
+./http-api-tester example-suite
 
 # Shut down http-server again: kill %$(jobs | grep http-server | grep -Po '\d+')
 ```

@@ -89,8 +89,8 @@ function test {
   $command > $actual_folder/response-curl
 
   function compare {
-    actual="$actual_folder/$1"
-    expected="$expected_folder/$1"
+    local actual="$actual_folder/$1"
+    local expected="$expected_folder/$1"
     cmp --silent $actual $expected
     local status=$?
     if [ $status -ne 0 ]; then

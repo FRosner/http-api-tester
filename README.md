@@ -8,7 +8,8 @@ Framework for testing HTTP APIs.
 
 ```sh
 # Start an HTTP server inside the git repo folder
-python -m SimpleHTTPServer &
+# This requires http-server to be installed (npm install http-server -g)
+http-server&
 
 # Test it
 ./http-api-tester example

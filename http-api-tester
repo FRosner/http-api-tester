@@ -42,7 +42,7 @@ function test {
     $test_case/before
   fi
 
-  mkdir actual 2> /dev/null
+  mkdir $test_case/actual 2> /dev/null
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
   echo "    - $base_command"

@@ -42,7 +42,7 @@ function test {
 
   if [ ! -z "$clean" ]; then
     echo "  clean:"
-    for test_result in $test_case/actual-*; do
+    for test_result in $test_case/run-*; do
       command="rm -rf $test_result"
       echo "    - $command"
       $command
@@ -74,9 +74,12 @@ function test {
     $test_case/before
   fi
 
-  actual_folder="$test_case/actual-$test_timestamp"
-  expected_folder="$test_case/expected"
+  run_folder="$test_case/run-$test_timestamp"
+  mkdir $run_folder 2> /dev/null
+  actual_folder="$run_folder/actual"
   mkdir $actual_folder 2> /dev/null
+  expected_folder="$run_folder/expected"
+  cp -R $test_case/expected $expected_folder 2> /dev/null
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
   echo "    - $base_command"

@@ -18,3 +18,4 @@ http-api-tester example
 
 - curl 7.43.0
 - jq-1.5
+- cmp (GNU diffutils) 2.8.1

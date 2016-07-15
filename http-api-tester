@@ -43,9 +43,10 @@ function test {
   fi
 
   mkdir actual 2> /dev/null
-  command="curl -s --write-out %{http_code}\n --output $test_case/actual/response-data $method_subcommand $request_data_subcommand $url_subcommand"
+  base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
-  echo "    - $command > $test_case/actual/response-curl"
+  echo "    - $base_command"
+  command="$base_command --write-out status-code:%{http_code}\n --output $test_case/actual/response-data"
   $command > $test_case/actual/response-curl
 
   function compare {
@@ -69,7 +70,8 @@ function test {
   fi
 
   if [ -r $test_case/expected/http-status ]; then
-    cat $test_case/actual/response-curl
+    grep "^status-code:" $test_case/actual/response-curl | cut -d: -f2 > $test_case/actual/http-status
+    compare http-status
   fi
 
 }

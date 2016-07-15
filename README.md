@@ -13,6 +13,8 @@ http-server&
 
 # Test it
 ./http-api-tester example
+
+# Shut down http-server again: kill %$(jobs | grep http-server | grep -Po '\d+')
 ```
 
 ## Requirements

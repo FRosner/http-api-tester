@@ -78,6 +78,7 @@ function test {
   fi
 
   if [ -r "$test_case/before" ]; then
+    echo "  before:"
     $test_case/before
   fi
 
@@ -119,6 +120,7 @@ function test {
   fi
 
   if [ -r "$test_case/after" ]; then
+    echo "  after:"
     $test_case/after
   fi
 }

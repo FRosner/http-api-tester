@@ -34,6 +34,8 @@ if [ ! -d "$test_case_directory" ]; then
   exit 1
 fi
 
+suite_exit_code=0
+
 function test {
   test_case=$1
 
@@ -108,8 +110,13 @@ function test {
       cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
       cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
       compare response-data.json
+      local status=$?
+      if [ ! "$status" = 0 ]; then
+        suite_exit_code=$status
+      fi
     else
       echo -e "    - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
+      suite_exit_code=1
     fi
   fi
 
@@ -117,6 +124,10 @@ function test {
     expectation_found=1
     grep "^status-code:" $actual_folder/response-curl | cut -d: -f2 > $actual_folder/http-status
     compare http-status
+    local status=$?
+    if [ ! "$status" = 0 ]; then
+      suite_exit_code=$status
+    fi
   fi
 
   if [ -z $expectation_found ]; then
@@ -133,3 +144,5 @@ for test_case in $test_case_directory/*; do
   [ -d "${test_case}" ] || continue
   test $test_case
 done
+
+exit $suite_exit_code

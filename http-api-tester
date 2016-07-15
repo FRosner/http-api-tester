@@ -98,14 +98,20 @@ function test {
 
   echo "  result:"
   if [ -r $expected_folder/response-data ]; then
+    expectation_found=1
     cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
     cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
     compare response-data.json
   fi
 
   if [ -r $expected_folder/http-status ]; then
+    expectation_found=1
     grep "^status-code:" $actual_folder/response-curl | cut -d: -f2 > $actual_folder/http-status
     compare http-status
+  fi
+
+  if [ -z $expectation_found ]; then
+    echo -e "    - \033[0;33mno expectations found in $test_case/expected\033[0m"
   fi
 }
 

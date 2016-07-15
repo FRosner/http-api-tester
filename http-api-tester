@@ -49,21 +49,21 @@ function test {
     done
   fi
 
-  method=$(cat $test_case/method)
+  method=$(cat $test_case/method 2> /dev/null || echo "")
   if [ -z "$method" ]; then
     method_subcommand=""
   else
     method_subcommand="-X $method"
   fi
 
-  url=$(cat $test_case/url)
+  url=$(cat $test_case/url 2> /dev/null || echo "")
   if [ -z "$url" ]; then
     url_subcommand="localhost"
   else
     url_subcommand="$url"
   fi
 
-  request_data=$(cat $test_case/request-data)
+  request_data=$(cat $test_case/request-data 2> /dev/null || echo "")
   if [ -z "$request_data" ]; then
     request_data_subcommand=""
   else

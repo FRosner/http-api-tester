@@ -42,6 +42,7 @@ Parameters printed in _italic_ are mandatory.
   - URL (defaults to `localhost:80`)
   - Request data
   - Before script
+  - After script
   - Expectations
     - HTTP status
     - Response data
@@ -58,6 +59,7 @@ example-suite
 │   ├── request-data
 │   └── url
 └── index-reachable
+    ├── after
     ├── before
     ├── expected
     │   └── http-status

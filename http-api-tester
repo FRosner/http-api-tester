@@ -117,6 +117,10 @@ function test {
   if [ -z $expectation_found ]; then
     echo -e "    - \033[0;33mno expectations found in $test_case/expected\033[0m"
   fi
+
+  if [ -r "$test_case/after" ]; then
+    $test_case/after
+  fi
 }
 
 for test_case in $test_case_directory/*; do

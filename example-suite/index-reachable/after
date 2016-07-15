@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "  after:"
+echo "    - dummy action 1"
+echo "    - dummy action 2"

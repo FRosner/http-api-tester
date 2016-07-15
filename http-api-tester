@@ -36,9 +36,10 @@ fi
 
 function test {
   test_case=$1
-  test_case_name="$(basename "${test_case}")"
 
-  echo -e "\033[1m$test_case_name\033[0m:"
+  run_folder="$test_case/run-$test_timestamp"
+
+  echo -e "\033[1m$run_folder\033[0m:"
 
   if [ ! -z "$clean" ]; then
     echo "  clean:"
@@ -48,6 +49,12 @@ function test {
       $command
     done
   fi
+
+  mkdir $run_folder 2> /dev/null
+  actual_folder="$run_folder/actual"
+  mkdir $actual_folder 2> /dev/null
+  expected_folder="$run_folder/expected"
+  cp -R $test_case/expected $expected_folder 2> /dev/null
 
   method=$(cat $test_case/method 2> /dev/null || echo "")
   if [ -z "$method" ]; then
@@ -74,12 +81,6 @@ function test {
     $test_case/before
   fi
 
-  run_folder="$test_case/run-$test_timestamp"
-  mkdir $run_folder 2> /dev/null
-  actual_folder="$run_folder/actual"
-  mkdir $actual_folder 2> /dev/null
-  expected_folder="$run_folder/expected"
-  cp -R $test_case/expected $expected_folder 2> /dev/null
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
   echo "    - $base_command"

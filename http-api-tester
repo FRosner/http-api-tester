@@ -104,9 +104,13 @@ function test {
   echo "  result:"
   if [ -r $expected_folder/response-data ]; then
     expectation_found=1
-    cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
-    cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
-    compare response-data.json
+    if [ -r $actual_folder/response-data ]; then
+      cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
+      cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
+      compare response-data.json
+    else
+      echo -e "    - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
+    fi
   fi
 
   if [ -r $expected_folder/http-status ]; then

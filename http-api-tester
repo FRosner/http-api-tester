@@ -43,10 +43,10 @@ function test {
   fi
 
   mkdir actual 2> /dev/null
-  command="curl -s -v $method_subcommand $request_data_subcommand $url_subcommand"
+  command="curl -s --write-out %{http_code}\n --output $test_case/actual/response-data $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
-  echo "    - $command"
-  $command 1> $test_case/actual/response-data 2> $test_case/actual/response-curl
+  echo "    - $command > $test_case/actual/response-curl"
+  $command > $test_case/actual/response-curl
 
   function compare {
     actual="$test_case/actual/$1"
@@ -54,18 +54,24 @@ function test {
     cmp --silent $actual $expected
     local status=$?
     if [ $status -ne 0 ]; then
-      echo    "  result:"
       echo -e "    - \033[0;31m$actual did not match $expected\033[0m" >&2
     else
-      echo    "  result:"
       echo -e "    - \033[0;32m$actual matched $expected\033[0m"
     fi
     return $status
   }
 
-  cat $test_case/actual/response-data | jq . > $test_case/actual/response-data.json
-  cat $test_case/expected/response-data | jq . > $test_case/expected/response-data.json
-  compare response-data.json
+  echo "  result:"
+  if [ -r $test_case/expected/response-data ]; then
+    cat $test_case/actual/response-data | jq . > $test_case/actual/response-data.json
+    cat $test_case/expected/response-data | jq . > $test_case/expected/response-data.json
+    compare response-data.json
+  fi
+
+  if [ -r $test_case/expected/http-status ]; then
+    cat $test_case/actual/response-curl
+  fi
+
 }
 
 for test_case in $test_case_directory/*; do

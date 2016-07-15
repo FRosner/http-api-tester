@@ -7,6 +7,10 @@ Framework for testing HTTP APIs.
 ## Usage
 
 ```sh
+# Start an HTTP server inside the git repo folder
+python -m SimpleHTTPServer &
+
+# Test it
 http-api-tester example
 ```
 

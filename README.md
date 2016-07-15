@@ -11,7 +11,7 @@ Framework for testing HTTP APIs.
 python -m SimpleHTTPServer &
 
 # Test it
-http-api-tester example
+./http-api-tester example
 ```
 
 ## Requirements

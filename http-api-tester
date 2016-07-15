@@ -1,9 +1,32 @@
 #!/bin/bash
 
-test_case_directory=$1
-if [ -z "$test_case_directory" ]; then
-  echo "Usage: http-api-tester <test_case_directory>"
+function print_usage {
+  echo "Usage: http-api-tester <arguments> <test_case_directory>"
+  echo "Arguments:"
+  echo "  -c|--clean"
+  echo "    delete previous run results"
   exit 1
+}
+
+# Parse command line arguments (http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash)
+while [[ $# -gt 1 ]]; do
+  key="$1"
+
+  case $key in
+    -c|--clean)
+    clean=1
+    ;;
+    *)
+    print_usage
+    ;;
+  esac
+  shift
+done
+
+test_case_directory=$1
+test_timestamp=$(date +"%Y-%m-%d-%k-%M-%S")
+if [ -z "$test_case_directory" ]; then
+  print_usage
 fi
 
 if [ ! -d "$test_case_directory" ]; then
@@ -16,6 +39,15 @@ function test {
   test_case_name="$(basename "${test_case}")"
 
   echo -e "\033[1m$test_case_name\033[0m:"
+
+  if [ ! -z "$clean" ]; then
+    echo "  clean:"
+    for test_result in $test_case/actual-*; do
+      command="rm -rf $test_result"
+      echo "    - $command"
+      $command
+    done
+  fi
 
   method=$(cat $test_case/method)
   if [ -z "$method" ]; then
@@ -42,16 +74,18 @@ function test {
     $test_case/before
   fi
 
-  mkdir $test_case/actual 2> /dev/null
+  actual_folder="$test_case/actual-$test_timestamp"
+  expected_folder="$test_case/expected"
+  mkdir $actual_folder 2> /dev/null
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
   echo "  command:"
   echo "    - $base_command"
-  command="$base_command --write-out status-code:%{http_code}\n --output $test_case/actual/response-data"
-  $command > $test_case/actual/response-curl
+  command="$base_command --write-out status-code:%{http_code}\n --output $actual_folder/response-data"
+  $command > $actual_folder/response-curl
 
   function compare {
-    actual="$test_case/actual/$1"
-    expected="$test_case/expected/$1"
+    actual="$actual_folder/$1"
+    expected="$expected_folder/$1"
     cmp --silent $actual $expected
     local status=$?
     if [ $status -ne 0 ]; then
@@ -63,17 +97,16 @@ function test {
   }
 
   echo "  result:"
-  if [ -r $test_case/expected/response-data ]; then
-    cat $test_case/actual/response-data | jq . > $test_case/actual/response-data.json
-    cat $test_case/expected/response-data | jq . > $test_case/expected/response-data.json
+  if [ -r $expected_folder/response-data ]; then
+    cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
+    cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
     compare response-data.json
   fi
 
-  if [ -r $test_case/expected/http-status ]; then
-    grep "^status-code:" $test_case/actual/response-curl | cut -d: -f2 > $test_case/actual/http-status
+  if [ -r $expected_folder/http-status ]; then
+    grep "^status-code:" $actual_folder/response-curl | cut -d: -f2 > $actual_folder/http-status
     compare http-status
   fi
-
 }
 
 for test_case in $test_case_directory/*; do

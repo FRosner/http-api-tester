@@ -71,6 +71,14 @@ example-suite
 Each test run is persisted in a subfolder called `run-%Y-%m-%d-%k-%M-%S`.
 It allows you to debug or save your test results for later.
 
+```
+test-suite/test-case
+├── run-2016-07-15-17-03-12
+│   └── ...
+└── run-2016-07-16-15-00-35
+    └── ...
+```
+
 If you execute a lot of tests, the results will pile up. In order to only save the latest test result, you can use the `-c` or `--clean` argument.
 
 ```

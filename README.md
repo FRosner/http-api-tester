@@ -1,5 +1,7 @@
 # HTTP API Tester
 
+[![Build Status](https://travis-ci.org/FRosner/http-api-tester.svg?branch=master)](https://travis-ci.org/FRosner/http-api-tester)
+
 ## Description
 
 This is a framework for testing HTTP APIs. It let's you define your test suites and test cases in form of a simple folder structure.

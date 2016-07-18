@@ -38,6 +38,7 @@ A test suite consist of one or multiple test cases.
 Each test case corresponds to one HTTP request being sent.
 The test case can be configured using the following parameters.
 Parameters printed in _italic_ are mandatory.
+Please note that all scripts need to be executable.
 
 - _Test case name (directory name)_
   - HTTP method (defaults to `GET`)

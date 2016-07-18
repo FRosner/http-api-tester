@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "    - stopping something needed for all test cases"

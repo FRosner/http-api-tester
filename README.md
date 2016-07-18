@@ -48,6 +48,8 @@ Parameters printed in _italic_ are mandatory.
   - Expectations
     - HTTP status
     - Response data
+- Before all script
+- After all script
 
 The example suite has the following directory structure:
 
@@ -60,14 +62,16 @@ example-suite
 │   ├── method
 │   ├── request-data
 │   └── url
-└── index-reachable
-    ├── after
-    ├── before
-    ├── expected
-    │   └── http-status
-    ├── method
-    ├── request-data
-    └── url
+├── index-reachable
+│   ├── before
+│   ├── after
+│   ├── expected
+│   │   └── http-status
+│   ├── method
+│   ├── request-data
+│   └── url
+├── before-all
+└── after-all
 ```
 
 ### Test Results

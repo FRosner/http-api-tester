@@ -43,13 +43,13 @@ function test {
 
   run_folder="$test_case/run-$test_timestamp"
 
-  echo -e "\033[1m$run_folder\033[0m:"
+  echo -e "  \033[1m$run_folder\033[0m:"
 
   if [ ! -z "$clean" ]; then
-    echo "  clean:"
+    echo "    clean:"
     for test_result in $test_case/run-*; do
       command="rm -rf $test_result"
-      echo "    - $command"
+      echo "      - $command"
       $command
     done
   fi
@@ -82,13 +82,13 @@ function test {
   fi
 
   if [ -r "$test_case/before" ]; then
-    echo "  before:"
+    echo "    before:"
     $test_case/before
   fi
 
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
-  echo "  command:"
-  echo "    - $base_command"
+  echo "    command:"
+  echo "      - $base_command"
   command="$base_command --write-out status-code:%{http_code}\n --output $actual_folder/response-data"
   $command > $actual_folder/response-curl
 
@@ -98,14 +98,14 @@ function test {
     cmp --silent $actual $expected
     local status=$?
     if [ $status -ne 0 ]; then
-      echo -e "    - \033[0;31m$actual did not match $expected\033[0m" >&2
+      echo -e "      - \033[0;31m$actual did not match $expected\033[0m" >&2
     else
-      echo -e "    - \033[0;32m$actual matched $expected\033[0m"
+      echo -e "      - \033[0;32m$actual matched $expected\033[0m"
     fi
     return $status
   }
 
-  echo "  result:"
+  echo "    result:"
   if [ -r $expected_folder/response-data ]; then
     expectation_found=1
     if [ -r $actual_folder/response-data ]; then
@@ -117,7 +117,7 @@ function test {
         suite_exit_code=$status
       fi
     else
-      echo -e "    - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
+      echo -e "      - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
       suite_exit_code=1
     fi
   fi
@@ -133,18 +133,30 @@ function test {
   fi
 
   if [ -z $expectation_found ]; then
-    echo -e "    - \033[0;33mno expectations found in $test_case/expected\033[0m"
+    echo -e "      - \033[0;33mno expectations found in $test_case/expected\033[0m"
   fi
 
   if [ -r "$test_case/after" ]; then
-    echo "  after:"
+    echo "    after:"
     $test_case/after
   fi
 }
+
+echo -e "\033[1m$test_case_directory\033[0m:"
+
+if [ -r "$test_case_directory/before-all" ]; then
+  echo "  before-all:"
+  $test_case_directory/before-all
+fi
 
 for test_case in $test_case_directory/*; do
   [ -d "${test_case}" ] || continue
   test $test_case
 done
+
+if [ -r "$test_case_directory/after-all" ]; then
+  echo "  after-all:"
+  $test_case_directory/after-all
+fi
 
 exit $suite_exit_code

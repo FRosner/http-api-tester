@@ -24,7 +24,9 @@ while [[ $# -gt 1 ]]; do
 done
 
 test_case_directory=$1
-test_timestamp=$(date +"%Y-%m-%d-%k-%M-%S")
+test_date=$(date +"%Y-%m-%d")
+test_time=$(date +"%T" | sed s/:/-/g)
+test_timestamp="$test_date-$test_time"
 if [ -z "$test_case_directory" ]; then
   print_usage
 fi

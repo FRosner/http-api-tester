@@ -51,6 +51,8 @@ Please note that all scripts need to be executable.
     - Response data
 - Before all script
 - After all script
+- Before each script
+- After each script
 
 The example suite has the following directory structure:
 
@@ -72,7 +74,9 @@ example-suite
 │   ├── request-data
 │   └── url
 ├── before-all
-└── after-all
+├── after-all
+├── before-each
+└── after-each
 ```
 
 ### Test Results

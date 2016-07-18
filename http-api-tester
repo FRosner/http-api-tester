@@ -81,6 +81,11 @@ function test {
     request_data_subcommand="-d @$test_case/request-data"
   fi
 
+  if [ -r "$test_case_directory/before-each" ]; then
+    echo "    before-each:"
+    $test_case_directory/before-each
+  fi
+
   if [ -r "$test_case/before" ]; then
     echo "    before:"
     $test_case/before
@@ -139,6 +144,11 @@ function test {
   if [ -r "$test_case/after" ]; then
     echo "    after:"
     $test_case/after
+  fi
+
+  if [ -r "$test_case_directory/after-each" ]; then
+    echo "    after-each:"
+    $test_case_directory/after-each
   fi
 }
 

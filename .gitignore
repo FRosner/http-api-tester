@@ -1,1 +1,2 @@
 example-suite/*/run-*
+*.DS_Store

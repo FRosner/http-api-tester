@@ -7,6 +7,8 @@ function print_usage {
   echo "    delete previous run results"
   echo "  -v|--verbose"
   echo "    show more detailed information about the test runs"
+  echo "  -d|--diff"
+  echo "    show diff in case of test failure"
   exit 1
 }
 
@@ -20,6 +22,9 @@ while [[ $# -gt 1 ]]; do
     ;;
     -v|--verbose)
     verbose=1
+    ;;
+    -d|--diff)
+    detail=1
     ;;
     *)
     print_usage
@@ -123,6 +128,9 @@ function test {
     local status=$?
     if [ $status -ne 0 ]; then
       echo -e "      - \033[0;31m$actual did not match $expected\033[0m" >&2
+      if [ ! -z "$detail" ]; then
+        diff $actual $expected >&2
+      fi
     else
       echo -e "      - \033[0;32m$actual matched $expected\033[0m"
     fi

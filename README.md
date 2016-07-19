@@ -113,3 +113,4 @@ bash <(curl -s https://raw.githubusercontent.com/FRosner/http-api-tester/master/
 - curl 7.43.0
 - jq-1.5 (for JSON payload)
 - cmp (GNU diffutils) 2.8.1
+- diff (GNU diffutils) 2.8.1

@@ -5,6 +5,8 @@ function print_usage {
   echo "Arguments:"
   echo "  -c|--clean"
   echo "    delete previous run results"
+  echo "  -v|--verbose"
+  echo "    show more detailed information about the test runs"
   exit 1
 }
 
@@ -15,6 +17,9 @@ while [[ $# -gt 1 ]]; do
   case $key in
     -c|--clean)
     clean=1
+    ;;
+    -v|--verbose)
+    verbose=1
     ;;
     *)
     print_usage
@@ -38,6 +43,20 @@ fi
 
 suite_exit_code=0
 
+function if_verbose {
+  if [ ! -z "$verbose" ]; then
+    "$@"
+  fi
+}
+
+function if_verbose_else_devnull {
+  if [ ! -z "$verbose" ]; then
+    "$@"
+  else
+    "$@" > /dev/null
+  fi
+}
+
 function test {
   test_case=$1
 
@@ -46,10 +65,10 @@ function test {
   echo -e "  \033[1m$run_folder\033[0m:"
 
   if [ ! -z "$clean" ]; then
-    echo "    clean:"
+    if_verbose echo "    clean:"
     for test_result in $test_case/run-*; do
       command="rm -rf $test_result"
-      echo "      - $command"
+      if_verbose echo "      - $command"
       $command
     done
   fi
@@ -82,18 +101,18 @@ function test {
   fi
 
   if [ -r "$test_case_directory/before-each" ]; then
-    echo "    before-each:"
-    $test_case_directory/before-each
+    if_verbose echo "    before-each:"
+    if_verbose_else_devnull $test_case_directory/before-each
   fi
 
   if [ -r "$test_case/before" ]; then
-    echo "    before:"
-    $test_case/before
+    if_verbose echo "    before:"
+    if_verbose_else_devnull $test_case/before
   fi
 
   base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
-  echo "    command:"
-  echo "      - $base_command"
+  if_verbose echo "    command:"
+  if_verbose echo "      - $base_command"
   command="$base_command --write-out status-code:%{http_code}\n --output $actual_folder/response-data"
   $command > $actual_folder/response-curl
 
@@ -142,21 +161,21 @@ function test {
   fi
 
   if [ -r "$test_case/after" ]; then
-    echo "    after:"
-    $test_case/after
+    if_verbose echo "    after:"
+    if_verbose_else_devnull $test_case/after
   fi
 
   if [ -r "$test_case_directory/after-each" ]; then
-    echo "    after-each:"
-    $test_case_directory/after-each
+    if_verbose echo "    after-each:"
+    if_verbose_else_devnull $test_case_directory/after-each
   fi
 }
 
 echo -e "\033[1m$test_case_directory\033[0m:"
 
 if [ -r "$test_case_directory/before-all" ]; then
-  echo "  before-all:"
-  $test_case_directory/before-all
+  if_verbose echo "  before-all:"
+  if_verbose_else_devnull $test_case_directory/before-all
 fi
 
 for test_case in $test_case_directory/*; do
@@ -165,8 +184,8 @@ for test_case in $test_case_directory/*; do
 done
 
 if [ -r "$test_case_directory/after-all" ]; then
-  echo "  after-all:"
-  $test_case_directory/after-all
+  if_verbose echo "  after-all:"
+  if_verbose_else_devnull $test_case_directory/after-all
 fi
 
 exit $suite_exit_code

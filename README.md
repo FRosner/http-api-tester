@@ -24,7 +24,10 @@ cd http-api-tester.git
 # You can skip it if you want (but the tests will fail)
 http-server&
 
-# Test it
+# See Usage
+./http-api-tester
+
+# Run example test suite
 ./http-api-tester example-suite
 
 # Shut down http-server again: kill %$(jobs | grep http-server | grep -Po '\d+')

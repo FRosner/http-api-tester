@@ -129,6 +129,7 @@ function test {
     return $status
   }
 
+  expectation_found=0
   echo "    result:"
   if [ -r $expected_folder/response-data ]; then
     expectation_found=1
@@ -156,7 +157,7 @@ function test {
     fi
   fi
 
-  if [ -z $expectation_found ]; then
+  if [ "$expectation_found" = 0 ]; then
     echo -e "      - \033[0;33mno expectations found in $test_case/expected\033[0m"
   fi
 

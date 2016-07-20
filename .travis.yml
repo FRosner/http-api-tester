@@ -1,3 +1,7 @@
-language: bash
+language: node_js
+node_js: node
 script:
-  - ./http-api-tester example-suite || true
+  - npm install http-server -g
+  - http-server &
+  - sleep 4
+  - ./http-api-tester example-suite

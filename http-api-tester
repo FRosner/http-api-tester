@@ -3,13 +3,19 @@
 function print_usage {
   echo "Usage: http-api-tester <arguments> <test_case_directory>"
   echo "Arguments:"
+  echo "  -h|--help"
+  echo "    print usage help"
   echo "  -c|--clean"
   echo "    delete previous run results"
   echo "  -v|--verbose"
   echo "    show more detailed information about the test runs"
   echo "  -d|--diff"
   echo "    show diff in case of test failure"
-  exit 1
+  if [ -z "$1" ]; then
+    exit 1
+  else
+    exit $1
+  fi
 }
 
 # Parse command line arguments (http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash)
@@ -26,12 +32,19 @@ while [[ $# -gt 1 ]]; do
     -d|--diff)
     detail=1
     ;;
+    -h|--help)
+    help=1
+    ;;
     *)
     print_usage
     ;;
   esac
   shift
 done
+
+if [ ! -z $help ]; then
+  print_usage 0
+fi
 
 test_case_directory=$1
 test_date=$(date +"%Y-%m-%d")

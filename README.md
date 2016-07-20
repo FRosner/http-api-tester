@@ -25,7 +25,7 @@ cd http-api-tester.git
 http-server&
 
 # See Usage
-./http-api-tester
+./http-api-tester --help
 
 # Run example test suite
 ./http-api-tester example-suite

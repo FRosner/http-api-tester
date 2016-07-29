@@ -101,6 +101,18 @@ If you execute a lot of tests, the results will pile up. In order to only save t
 ./http-api-tester -c example-suite
 ```
 
+### Executing Specific Tests
+
+In case you want to launch a only selected tests, you can use the `-g` or `--grep` option.
+It allows to you select the test cases to run based on a regular expression which is applied to the test case name.
+This might be useful for debugging or executing only parts of your longer running suite.
+
+If, for example, you want to run only your UI tests ending with `ui`, you can accomplish this by executing
+
+```sh
+./http-api-tester -g ".*ui$" example-suite
+```
+
 ## Installation
 
 Make sure to have your test suites ready in your project directory and the requirements set up. To run the tool, just execute:

@@ -11,6 +11,8 @@ function print_usage {
   echo "    show more detailed information about the test runs"
   echo "  -d|--diff"
   echo "    show diff in case of test failure"
+  echo "  -g|--grep \"<regex>\""
+  echo "    only execute test cases matching the regex"
   if [ -z "$1" ]; then
     exit 1
   else
@@ -34,6 +36,10 @@ while [[ $# -gt 1 ]]; do
     ;;
     -h|--help)
     help=1
+    ;;
+    -g|--grep)
+    grep=$2
+    shift 1
     ;;
     *)
     print_usage
@@ -79,6 +85,12 @@ function test {
   test_case=$1
 
   run_folder="$test_case/run-$test_timestamp"
+
+  if [[ ! -z $grep ]] && [[ ! $test_case =~ $grep ]]; then
+    echo -e "  \033[1m$run_folder\033[0m:"
+    echo    "    result: skipped"
+    return
+  fi
 
   echo -e "  \033[1m$run_folder\033[0m:"
 

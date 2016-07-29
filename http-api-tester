@@ -39,7 +39,7 @@ while [[ $# -gt 1 ]]; do
     print_usage
     ;;
   esac
-  shift
+  shift 1
 done
 
 if [ ! -z $help ]; then

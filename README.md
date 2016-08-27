@@ -47,6 +47,7 @@ Please note that all scripts need to be executable.
   - HTTP method (defaults to `GET`)
   - URL (defaults to `localhost:80`)
   - Request data
+  - Request header (one header per line)
   - Before script
   - After script
   - Expectations
@@ -67,6 +68,7 @@ example-suite
 │   │   ├── response-data
 │   ├── method
 │   ├── request-data
+│   ├── request-header
 │   └── url
 ├── index-reachable
 │   ├── before

@@ -130,6 +130,13 @@ function test {
     request_data_subcommand="-d @$test_case/request-data"
   fi
 
+  header_subcommand=""
+  if [ -r "$test_case/request-header" ]; then
+    while read header; do
+      header_subcommand="$header_subcommand -H '$header'"
+    done <$test_case/request-header
+  fi
+
   if [ -r "$test_case_directory/before-each" ]; then
     if_verbose echo "    before-each:"
     if_verbose_else_devnull $test_case_directory/before-each
@@ -140,7 +147,7 @@ function test {
     if_verbose_else_devnull $test_case/before
   fi
 
-  base_command="curl -s $method_subcommand $request_data_subcommand $url_subcommand"
+  base_command="curl -s $method_subcommand $header_subcommand $request_data_subcommand $url_subcommand"
   if_verbose echo "    command:"
   if_verbose echo "      - $base_command"
   command="$base_command --write-out status-code:%{http_code}\n --output $actual_folder/response-data"

@@ -133,7 +133,7 @@ function test {
   header_subcommand=""
   if [ -r "$test_case/request-header" ]; then
     while read header; do
-      header_subcommand="$header_subcommand -H '$header'"
+      header_subcommand="$header_subcommand -H "'$header'
     done <$test_case/request-header
   fi
 

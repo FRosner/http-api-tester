@@ -133,7 +133,7 @@ function test {
   header_subcommand=""
   if [ -r "$test_case/request-header" ]; then
     while read header; do
-      header_subcommand="$header_subcommand -H "'$header'
+      header_subcommand="$header_subcommand -H '$header'"
     done <$test_case/request-header
   fi
 
@@ -150,8 +150,8 @@ function test {
   base_command="curl -s $method_subcommand $header_subcommand $request_data_subcommand $url_subcommand"
   if_verbose echo "    command:"
   if_verbose echo "      - $base_command"
-  command="$base_command --write-out status-code:%{http_code}\n --output $actual_folder/response-data"
-  $command > $actual_folder/response-curl
+  command="$base_command --write-out status-code:%{http_code} --output $actual_folder/response-data"
+  eval "$command" > $actual_folder/response-curl
 
   function compare {
     local actual="$actual_folder/$1"

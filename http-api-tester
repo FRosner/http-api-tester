@@ -139,12 +139,12 @@ function test {
 
   if [ -r "$test_case_directory/before-each" ]; then
     if_verbose echo "    before-each:"
-    if_verbose_else_devnull $test_case_directory/before-each
+    if_verbose_else_devnull bash $test_case_directory/before-each
   fi
 
   if [ -r "$test_case/before" ]; then
     if_verbose echo "    before:"
-    if_verbose_else_devnull $test_case/before
+    if_verbose_else_devnull bash $test_case/before
   fi
 
   base_command="curl -s $method_subcommand $header_subcommand $request_data_subcommand $url_subcommand"
@@ -203,12 +203,12 @@ function test {
 
   if [ -r "$test_case/after" ]; then
     if_verbose echo "    after:"
-    if_verbose_else_devnull $test_case/after
+    if_verbose_else_devnull bash $test_case/after
   fi
 
   if [ -r "$test_case_directory/after-each" ]; then
     if_verbose echo "    after-each:"
-    if_verbose_else_devnull $test_case_directory/after-each
+    if_verbose_else_devnull bash $test_case_directory/after-each
   fi
 }
 
@@ -216,7 +216,7 @@ echo -e "\033[1m$test_case_directory\033[0m:"
 
 if [ -r "$test_case_directory/before-all" ]; then
   if_verbose echo "  before-all:"
-  if_verbose_else_devnull $test_case_directory/before-all
+  if_verbose_else_devnull bash $test_case_directory/before-all
 fi
 
 for test_case in $test_case_directory/*; do
@@ -226,7 +226,7 @@ done
 
 if [ -r "$test_case_directory/after-all" ]; then
   if_verbose echo "  after-all:"
-  if_verbose_else_devnull $test_case_directory/after-all
+  if_verbose_else_devnull bash $test_case_directory/after-all
 fi
 
 exit $suite_exit_code

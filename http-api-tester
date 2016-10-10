@@ -171,15 +171,28 @@ function test {
 
   expectation_found=0
   echo "    result:"
-  if [ -r $expected_folder/response-data ]; then
+  if [ -f $expected_folder/response-data ]; then
     expectation_found=1
     if [ -r $actual_folder/response-data ]; then
-      cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
-      cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
-      compare response-data.json
-      local status=$?
-      if [ ! "$status" = 0 ]; then
-        suite_exit_code=$status
+      if [ -x $expected_folder/response-data ]; then
+        # response data should be checked through executable
+        $expected_folder/response-data $actual_folder/response-data
+        local status=$?
+        if [ ! "$status" = 0 ]; then
+          echo -e "      - \033[0;31m$expected_folder/response-data $actual_folder/response-data execution failed\033[0m" >&2
+          suite_exit_code=$status
+        else
+          echo -e "      - \033[0;32m$expected_folder/response-data $actual_folder/response-data execution succeeded\033[0m"
+        fi
+      else
+        # response data should be checked through comparing two JSONs
+        cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
+        cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
+        compare response-data.json
+        local status=$?
+        if [ ! "$status" = 0 ]; then
+          suite_exit_code=$status
+        fi
       fi
     else
       echo -e "      - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2

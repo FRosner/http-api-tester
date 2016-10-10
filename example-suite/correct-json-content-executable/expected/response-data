@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import sys
+import re
+
+with open(sys.argv[1], 'r') as file:
+  if re.search("1", file.read()):
+    print "found"
+    exit(0)
+  else:
+    print "not found"
+    exit(1)

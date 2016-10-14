@@ -4,7 +4,7 @@
 
 ## Description
 
-This is a framework for testing HTTP APIs. It let's you define your test suites and test cases in form of a simple folder structure.
+This is a framework for testing HTTP APIs. It let's you define your test suites and test cases in form of a simple folder structure or a generic run script.
 
 ## Usage
 
@@ -48,15 +48,16 @@ All scripts will be executed with bash at the moment.
   - URL (defaults to `localhost:80`)
   - Request data
   - Request header (one header per line)
-  - Before script
-  - After script
+  - Before script (bash or executable)
+  - Run script (executable)
+  - After script (bash or executable)
   - Expectations
     - HTTP status
     - Response data (JSON or executable)
-- Before all script
-- After all script
-- Before each script
-- After each script
+- Before all script (bash or executable)
+- After all script (bash or executable)
+- Before each script (bash or executable)
+- After each script (bash or executable)
 
 The example suite has the following directory structure:
 
@@ -70,6 +71,8 @@ example-suite
 │   ├── request-data
 │   ├── request-header
 │   └── url
+├── generic-test
+│   └── run
 ├── index-reachable
 │   ├── before
 │   ├── after
@@ -83,6 +86,8 @@ example-suite
 ├── before-each
 └── after-each
 ```
+
+If there is an executable `run` script, it will be executed instead of the specified HTTP requests.
 
 ### Test Results
 

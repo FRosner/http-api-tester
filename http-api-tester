@@ -147,11 +147,17 @@ function test {
     if_verbose_else_devnull bash $test_case/before
   fi
 
-  base_command="curl -s $method_subcommand $header_subcommand $request_data_subcommand $url_subcommand"
   if_verbose echo "    command:"
-  if_verbose echo "      - $base_command"
-  command="$base_command --write-out status-code:%{http_code} --output $actual_folder/response-data"
-  eval "$command" > $actual_folder/response-curl
+  if [ -x "$test_case/run" ]; then
+    if_verbose echo "      - $test_case/run"
+    $test_case/run
+    echo "$?" > $actual_folder/run-status
+  else
+    base_command="curl -s $method_subcommand $header_subcommand $request_data_subcommand $url_subcommand"
+    if_verbose echo "      - $base_command"
+    command="$base_command --write-out status-code:%{http_code} --output $actual_folder/response-data"
+    eval "$command" > $actual_folder/response-curl
+  fi
 
   function compare {
     local actual="$actual_folder/$1"
@@ -171,42 +177,53 @@ function test {
 
   expectation_found=0
   echo "    result:"
-  if [ -f $expected_folder/response-data ]; then
+  if [ -r $actual_folder/run-status ]; then
     expectation_found=1
-    if [ -r $actual_folder/response-data ]; then
-      if [ -x $expected_folder/response-data ]; then
-        # response data should be checked through executable
-        $expected_folder/response-data $actual_folder/response-data
-        local status=$?
-        if [ ! "$status" = 0 ]; then
-          echo -e "      - \033[0;31m$expected_folder/response-data $actual_folder/response-data execution failed\033[0m" >&2
-          suite_exit_code=$status
+    local run_status="$(cat $actual_folder/run-status)"
+    if [ ! $run_status = 0 ]; then
+      echo -e "      - \033[0;31m$test_case/run exited with $run_status\033[0m" >&2
+      suite_exit_code=$run_status
+    else
+      echo -e "      - \033[0;32m$test_case/run exited with $run_status\033[0m"
+    fi
+  else
+    if [ -f $expected_folder/response-data ]; then
+      expectation_found=1
+      if [ -r $actual_folder/response-data ]; then
+        if [ -x $expected_folder/response-data ]; then
+          # response data should be checked through executable
+          $expected_folder/response-data $actual_folder/response-data
+          local status=$?
+          if [ ! "$status" = 0 ]; then
+            echo -e "      - \033[0;31m$expected_folder/response-data $actual_folder/response-data execution failed\033[0m" >&2
+            suite_exit_code=$status
+          else
+            echo -e "      - \033[0;32m$expected_folder/response-data $actual_folder/response-data execution succeeded\033[0m"
+          fi
         else
-          echo -e "      - \033[0;32m$expected_folder/response-data $actual_folder/response-data execution succeeded\033[0m"
+          # response data should be checked through comparing two JSONs
+          cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
+          cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
+          compare response-data.json
+          local status=$?
+          if [ ! "$status" = 0 ]; then
+            suite_exit_code=$status
+          fi
         fi
       else
-        # response data should be checked through comparing two JSONs
-        cat $actual_folder/response-data | jq . > $actual_folder/response-data.json
-        cat $expected_folder/response-data | jq . > $expected_folder/response-data.json
-        compare response-data.json
-        local status=$?
-        if [ ! "$status" = 0 ]; then
-          suite_exit_code=$status
-        fi
+        echo -e "      - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
+        suite_exit_code=1
       fi
-    else
-      echo -e "      - \033[0;31m$actual_folder/response-data does not exist\033[0m" >&2
-      suite_exit_code=1
     fi
-  fi
 
-  if [ -r $expected_folder/http-status ]; then
-    expectation_found=1
-    grep "^status-code:" $actual_folder/response-curl | cut -d: -f2 > $actual_folder/http-status
-    compare http-status
-    local status=$?
-    if [ ! "$status" = 0 ]; then
-      suite_exit_code=$status
+    if [ -r $expected_folder/http-status ]; then
+      expectation_found=1
+      grep "^status-code:" $actual_folder/response-curl | cut -d: -f2 > $actual_folder/http-status
+      compare http-status
+      local status=$?
+      if [ ! "$status" = 0 ]; then
+        suite_exit_code=$status
+      fi
     fi
   fi
 

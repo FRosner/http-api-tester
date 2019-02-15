@@ -48,6 +48,7 @@ All scripts will be executed with bash at the moment.
   - URL (defaults to `localhost:80`)
   - Request data
   - Request header (one header per line)
+  - Curl options (such as --insecure)
   - Before script (bash or executable)
   - Run script (executable)
   - After script (bash or executable)
@@ -69,6 +70,7 @@ example-suite
 │   │   ├── response-data
 │   ├── method
 │   ├── request-data
+│   ├── curl-options
 │   ├── request-header
 │   └── url
 ├── generic-test

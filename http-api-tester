@@ -137,7 +137,7 @@ function test {
     done <$test_case/request-header
   fi
 
-  curl_options=$(cat $test_case/curl_options 2> /dev/null || echo "")
+  curl_options=$(cat $test_case/curl-options 2> /dev/null || echo "")
 
   if [ -r "$test_case_directory/before-each" ]; then
     if_verbose echo "    before-each:"

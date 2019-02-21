@@ -13,6 +13,8 @@ function print_usage {
   echo "    show diff in case of test failure"
   echo "  -g|--grep \"<regex>\""
   echo "    only execute test cases matching the regex"
+  echo "  -o|--operand \"<eq|ge|le>\""
+  echo "    match equal, greater-or-equal than, or less-or-equal than (in jq comparison of json)"
   if [ -z "$1" ]; then
     exit 1
   else
@@ -39,6 +41,10 @@ while [[ $# -gt 1 ]]; do
     ;;
     -g|--grep)
     grep=$2
+    shift 1
+    ;;
+    -o|--operand)
+    operand=$2
     shift 1
     ;;
     *)
@@ -91,6 +97,11 @@ function test {
     echo    "    result: skipped"
     return
   fi
+
+  if [[ -z $operand ]] ; then
+    operand=eq
+  fi
+  echo -e "  comparison uses operand $operand"
 
   echo -e "  \033[1m$run_folder\033[0m:"
 
@@ -164,8 +175,19 @@ function test {
   function compare {
     local actual="$actual_folder/$1"
     local expected="$expected_folder/$1"
-    jq -e --argfile actual $actual --argfile expected $expected -n '$actual == $expected' > /dev/null
-    local status=$?
+    if [ $operand == "eq" ]; then
+      jq -e --argfile actual $actual --argfile expected $expected -n '$actual == $expected' > /dev/null
+      local status=$?
+    elif [ $operand == "ge" ]; then
+      jq -e --argfile actual $actual --argfile expected $expected -n '$actual >= $expected' > /dev/null
+      local status=$?
+    elif [ $operand == "le" ]; then
+      jq -e --argfile actual $actual --argfile expected $expected -n '$actual <= $expected' > /dev/null
+      local status=$?
+    else
+      echo "Don't know what to do with operand $operand, exiting";
+      exit 2
+    fi
     if [ $status -ne 0 ]; then
       echo -e "      - \033[0;31m$actual did not match $expected\033[0m" >&2
       if [ ! -z "$detail" ]; then

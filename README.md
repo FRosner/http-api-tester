@@ -122,6 +122,13 @@ If, for example, you want to run only your UI tests ending with `ui`, you can ac
 ./http-api-tester -g ".*ui$" example-suite
 ```
 
+### Comparing with greater-or-equal
+
+This option was introduced to cope with changing (growing) timestamps that may be part of your json answer. 
+```sh
+./http-api-tester -o ge example-suite-ge/
+```
+
 ## Installation
 
 Make sure to have your test suites ready in your project directory and the requirements set up. To run the tool, just execute:
